@@ -65,16 +65,16 @@ def text(request):
     return redirect('/')
 
 
-def index(request):
-    if request.method == 'POST':
-        form = ImageUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            print(form.cleaned_data)
-            form.save()
-            return redirect('/')  # Redirect to success page
-    else:
-        form = ImageUploadForm()
-    return render(request, 'index.html', {'form': form})
+# def index(request):
+#     if request.method == 'POST':
+#         form = ImageUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             print(form.cleaned_data)
+#             form.save()
+#             return redirect('/')  # Redirect to success page
+#     else:
+#         form = ImageUploadForm()
+#     return render(request, 'index.html', {'form': form})
 
 
 def fetch_OTP(request):

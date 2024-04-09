@@ -1,15 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-    <link rel="stylesheet" href="{% static 'front/css/leaflet-routing-machine.css' %}" />
-    <link rel="stylesheet" href="{% static 'front/css/default.css' %}" />
+    <title>Загрузить изображение</title>
 <body>
-    <h1>Ебейший сервис для туристов</h1>
+    <!-- <h1>Ебейший сервис для туристов</h1> -->
     <div class="form-container">
         <form method="post" enctype="multipart/form-data" class="form" action="{% url 'text_search' %}">
         {% csrf_token %}
@@ -17,16 +14,10 @@
             <label for="id_city">Выберите город:</label>
     <select name="city" id="id_city">
   <option value="Нижний Новгород">Нижний Новгород</option>
-
   <option value="Ярославль">Ярославль</option>
-
   <option value="Екатеринбург">Екатеринбург</option>
-
   <option value="Владимир">Владимир</option>
-
 </select>
-
-
 
   <div class="form-wrapper">
       <div class="form-input-wrapper">
@@ -89,33 +80,6 @@
         <button type="submit">Получить данные</button>
       </form>
 </body>
-<script src='image_loader.js'><\script>
-      <script>
-      async function fetchDataFromUrl(url) {
-          try {
-            const response = await fetch(`/fetch_otp?url=${encodeURIComponent(url)}`);
-              if (!response.ok) {
-                  throw new Error('Ошибка HTTP: ' + response.status);
-              }
-              const data = await response.json();
-              return data;
-          } catch (error) {
-              console.error('Произошла ошибка:', error);
-              return null;
-          }
-      }
-
-      document.getElementById('fetchDataForm').addEventListener('submit', async function(event) {
-          event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
-          const url = document.getElementById('urlInput').value;
-          const data = await fetchDataFromUrl(url);
-          if (data) {
-              console.log('Описание:', data.description);
-              console.log('URL изображения:', data.image_url);
-          } else {
-              console.log('Не удалось получить данные.');
-          }
-      });
-      </script>
-{% comment %} <script src="{% static 'front/js/map.js' %}"><\script> {% endcomment %}
+<script src='image_loader.js'></script>
+<script src='attract_shower.js'></script>
 </html>

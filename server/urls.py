@@ -1,13 +1,12 @@
 from django.urls import path
-
+from django.shortcuts import redirect
 from . import views
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, include
-from .views import index
 
 
 urlpatterns = [
-    path('', index, name="index"),
+    path('', lambda request: views.custom_redirect('upload/')),  # Перенаправление с корневой страницы на upload/
     path('upload/', views.upload_image, name='upload_image'),
     path('image_search/', views.image, name='image_search'),
     path('text_search/', views.text, name='text_search'),
