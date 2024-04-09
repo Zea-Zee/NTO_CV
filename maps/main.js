@@ -1,6 +1,7 @@
 async function fetchDataFromUrl(url) {
     try {
-        const response = await fetch(url); // Выполняем запрос
+        const response = await fetch(url);
+        console.log(response)
         if (!response.ok) { // Проверяем успешность запроса
             throw new Error('Ошибка HTTP: ' + response.status);
         }
@@ -16,7 +17,9 @@ async function fetchDataFromUrl(url) {
     }
 }
 
-const exampleUrl = 'https://opentripmap.com/ru/card/R2906502';
+// const exampleUrl = 'https://opentripmap.com/ru/card/R2906502';
+// const exampleUrl = 'https://opentripmap.com/ru/card/R2906502#15/56.3280/44.0021';
+const exampleUrl = 'google.com';
 fetchDataFromUrl(exampleUrl)
     .then(data => {
         if (data) {
