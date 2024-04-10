@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel='stylesheet' href="{% static 'front/css/upload_page.css' %}">
   <title>Загрузить изображение</title>
+</head>
 
 <body>
   <div class="main-container">
@@ -16,7 +17,8 @@
       </div>
       <div class="city-description-wrapper">
         <p id="city-description">
-          Город на Волге, основанный Великим князем Георгием Всеволодовичем в 1221 году. Богат историей и культурным наследием, включая Кремль и архитектуру
+          Город на Волге, основанный Великим князем Георгием Всеволодовичем в 1221 году. Богат историей и культурным
+          наследием, включая Кремль и архитектуру
         </p>
       </div>
     </div>
@@ -31,9 +33,11 @@
     </div>
     <h1>Постройте свой маршрут по достопримечательностям</h1>
 
+
     <div class="put-info-container">
       <div class="row-container">
         <form id="imageForm" enctype="multipart/form-data">
+          {% csrf_token %}
           <label for="image">фото</label>
           <input type="file" id="image" name="image" accept="image/*">
         </form>
@@ -42,33 +46,20 @@
         <p>или</p>
       </div>
       <div class="text-input row-container">
-        <label for="text">описание</label>
-        <input type="text" id="text" name="text">
+        <form id="descriptionForm">
+          {% csrf_token %}
+          <label for="text">описание</label>
+          <input type="text" id="text" name="text">
+        </form>
       </div>
     </div>
-    <div class="put-info-container">
-      <div class="row-container">
-        <button id="submitBtn">Добавить место</button>
-      </div>
-      <div class="row-container">
-        <button id="submitBtn">Показать места</button>
-      </div>
-    </div>
-  </div>
-
-  </div>
-
-  </form>
-  </div>
-  <form id="fetchDataForm">
-    <label for="urlInput">Введите адрес:</label><br>
-    <input type="text" id="urlInput" name="urlInput"><br>
-    <button type="button" id="fetchDataButton">Получить данные</button>
-  </form>
-  <div class="selected-places-container">
-    <h2>Выбранные места:</h2>
-    <ul id="selectedPlacesList"></ul>
-</div>
+    <button id="getSpots" type="button" class='submitBtn'>Показать результаты</button>
+    <form id="fetchDataForm">
+      {% csrf_token %}
+      <label for="urlInput">Введите адрес:</label><br>
+      <input type="text" id="urlInput" name="urlInput"><br>
+      <button type="submit" id="fetchDataButton">Получить данные</button>
+    </form>
 
 </body>
 <script type="text/javascript">const staticUrl = "{{ STATIC_URL }}";</script>

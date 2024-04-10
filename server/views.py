@@ -95,7 +95,48 @@ def fetch_OTP(request):
     except Exception as e:
         print('Error in fetch_OTP func:', e)
         return JsonResponse({'error': 'Произошла ошибка при получении данных'}, status=500)
+    
 
+#ЗАГЛУШКА
+def predict_photo(photo, city):
+    result = [
+        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "OSM": "way/38411380", "WikiData": "Q37996725", "Lon": 60.600349, "Lat": 56.845398},
+        {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "OSM": "node/2885181131", "WikiData": "Q55209768", "Lon": 60.601315, "Lat": 56.834167},
+        {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "OSM": "way/38581890", "WikiData": "Q55209768", "Lon": 60.602409, "Lat": 56.835133},
+        {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "OSM": "node/1930476141", "WikiData": "Q55154121", "Lon": 60.60743, "Lat": 56.833691},
+        {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "OSM": "node/3002726097", "WikiData": "Q55232375", "Lon": 60.607075	, "Lat": 56.834225}
+    ]
+    return result
+
+
+#ЗАГЛУШКА
+def predict_text(request, city):
+    result = [
+        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "OSM": "way/38411380", "WikiData": "Q37996725", "Lon": 60.600349, "Lat": 56.845398},
+        {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "OSM": "node/2885181131", "WikiData": "Q55209768", "Lon": 60.601315, "Lat": 56.834167},
+        {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "OSM": "way/38581890", "WikiData": "Q55209768", "Lon": 60.602409, "Lat": 56.835133},
+        {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "OSM": "node/1930476141", "WikiData": "Q55154121", "Lon": 60.60743, "Lat": 56.833691},
+        {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "OSM": "node/3002726097", "WikiData": "Q55232375", "Lon": 60.607075	, "Lat": 56.834225}
+    ]
+    return result
+
+
+from django.http import JsonResponse
+
+def predict_front(request):
+    print(f"req {request}")
+    if request.method == 'POST':
+        city = request.POST['city']
+        if 'photo' in request.FILES:
+            result = predict_photo(request.FILES['photo'], city)
+        elif 'text' in request.POST:
+            result = predict_text(request.POST['text'], city)
+        else:
+            return JsonResponse({'error': 'Некорректный запрос'}, status=400)
+        print(f'RESULT IS ::::::{request}::::::')
+        return JsonResponse(result, safe=False)
+    else:
+        return JsonResponse({'error': 'Метод запроса должен быть POST'}, status=405)
 
 
 # def showroute(request, lat1,long1,lat2,long2):

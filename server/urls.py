@@ -11,4 +11,5 @@ urlpatterns = [
     path('image_search/', views.image, name='image_search'),
     path('text_search/', views.text, name='text_search'),
     path('fetch_otp/', views.fetch_OTP, name='fetch_otp'),
+    path('predict_front', views.predict_front, name='predict_front'),
 ]
