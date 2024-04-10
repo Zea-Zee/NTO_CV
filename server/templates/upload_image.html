@@ -9,12 +9,16 @@
   <title>Загрузить изображение</title>
 
 <body>
-  <div class="city-block">
-    
-  </div>
   <div class="main-container">
-    <div class="container">
-      <h1>Постройте свой маршрут по достопримечательностям</h1>
+    <div class="city-block">
+      <div class="city-name-wrapper">
+        <h2 id="city-name">Нижний Новгород</h2>
+      </div>
+      <div class="city-description-wrapper">
+        <p id="city-description">
+          Город на Волге, основанный Великим князем Георгием Всеволодовичем в 1221 году. Богат историей и культурным наследием, включая Кремль и архитектуру
+        </p>
+      </div>
     </div>
     <div class="city-select-container">
       <label for="citySelect" class="citi-select-label">Выберите город:</label>
@@ -24,8 +28,9 @@
         <option value="Екатеринбург">Екатеринбург</option>
         <option value="Владимир">Владимир</option>
       </select>
-
     </div>
+    <h1>Постройте свой маршрут по достопримечательностям</h1>
+
     <div class="put-info-container">
       <div class="row-container">
         <form id="imageForm" enctype="multipart/form-data">
@@ -41,7 +46,14 @@
         <input type="text" id="text" name="text">
       </div>
     </div>
-    <button id="submitBtn">Добавить место</button>
+    <div class="put-info-container">
+      <div class="row-container">
+        <button id="submitBtn">Добавить место</button>
+      </div>
+      <div class="row-container">
+        <button id="submitBtn">Показать места</button>
+      </div>
+    </div>
   </div>
 
   </div>
@@ -53,6 +65,10 @@
     <input type="text" id="urlInput" name="urlInput"><br>
     <button type="button" id="fetchDataButton">Получить данные</button>
   </form>
+  <div class="selected-places-container">
+    <h2>Выбранные места:</h2>
+    <ul id="selectedPlacesList"></ul>
+</div>
 
 </body>
 <script type="text/javascript">const staticUrl = "{{ STATIC_URL }}";</script>
