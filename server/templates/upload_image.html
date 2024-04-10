@@ -1,85 +1,62 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Загрузить изображение</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel='stylesheet' href="{% static 'front/css/upload_page.css' %}">
+  <title>Загрузить изображение</title>
+
 <body>
-    <!-- <h1>Ебейший сервис для туристов</h1> -->
-    <div class="form-container">
-        <form method="post" enctype="multipart/form-data" class="form" action="{% url 'text_search' %}">
-        {% csrf_token %}
-        <input type="hidden" name="csrfmiddlewaretoken" value="1rCU4n7cIi4qHO4dGGX7xXMGV9YoETZyQgpAYwuO8kdVMVdmLssXZyuK87YiNUeE">
-            <label for="id_city">Выберите город:</label>
-    <select name="city" id="id_city">
-  <option value="Нижний Новгород">Нижний Новгород</option>
-  <option value="Ярославль">Ярославль</option>
-  <option value="Екатеринбург">Екатеринбург</option>
-  <option value="Владимир">Владимир</option>
-</select>
-
-  <div class="form-wrapper">
-      <div class="form-input-wrapper">
-           <label for="id_text_input">Текстовое описание:</label>
-            <input type="text" name="text_input" maxlength="100"  id="id_text_input">
-           <button type="submit">Поиск</button>
-      </div>
-
+  <div class="city-block">
+    
   </div>
-
-    </form>
-
-    <form method="post" enctype="multipart/form-data" class="form" action="{% url 'image_search' %}">
-        {% csrf_token %}
-        <input type="hidden" name="csrfmiddlewaretoken" value="1rCU4n7cIi4qHO4dGGX7xXMGV9YoETZyQgpAYwuO8kdVMVdmLssXZyuK87YiNUeE">
-            <label for="id_city">Выберите город:</label>
-    <select name="city" id="id_city">
-  <option value="Нижний Новгород">Нижний Новгород</option>
-
-  <option value="Ярославль">Ярославль</option>
-
-  <option value="Екатеринбург">Екатеринбург</option>
-
-  <option value="Владимир">Владимир</option>
-
-</select>
-
-
-
-  <div class="form-wrapper">
-        <div class="form-input-wrapper">
-{#             <label for="id_image">Image:</label>#}
-{#            <input type="file" name="image" accept="image/*"  id="id_image">#}
-            <div class="file_input">
-                <div class="box">
-                    <div class="box__input">
-                      <svg class="input-svg" xmlns="http://www.w3.org/2000/svg" widthid_="40" height="40" viewBox="0 0 40 40" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 25.863C0 28.0648 0.0687979 29.3659 0.858391 31.4694C1.23494 32.4725 1.56519 33.0813 2.08358 33.9685L3.72774 36.108C4.61061 37.0001 6.14621 38.2274 7.27658 38.7107C7.61988 38.8576 7.77878 38.9645 8.15391 39.104C10.1487 39.8455 12.248 40.2035 14.3796 39.8812C15.1236 39.7687 15.7274 39.6627 16.3895 39.4464C16.6427 39.3637 16.9533 39.2305 17.2567 39.125C18.3024 38.7614 20.3031 37.5376 21.0757 36.7249L22.3242 35.4869C23.4217 34.3288 36.989 20.1159 37.4335 19.5281C38.4044 18.244 38.6558 18.1492 39.342 16.4311C39.7345 15.4484 39.9504 14.3881 40 13.3182V12.3489C39.9352 10.9559 39.5931 9.58138 38.9961 8.3753L38.3713 7.30342C37.2997 5.78097 36.497 5.02076 34.8179 4.12851C32.2776 2.77866 28.8538 2.89592 26.4687 4.41435C24.9542 5.37855 24.7156 5.7614 23.5352 7.0069L10.097 21.1843C7.61043 23.7775 8.05625 28.4954 11.6403 30.3971C13.315 31.2857 15.4224 31.1426 16.9544 30.0683C18.1001 29.2649 24.851 21.9399 26.3086 20.402C26.8912 19.7872 27.7205 19.2125 27.8382 18.1403C27.9497 17.1232 27.2818 16.0537 25.8594 16.0537C24.9144 16.0537 23.5646 17.7743 22.7539 18.6297L15.8008 25.9661C15.3348 26.4577 14.9543 27.0995 14.0625 27.0995C12.6045 27.0995 11.7479 25.4808 12.5022 24.2167C12.9457 23.4733 14.2477 22.2467 14.9023 21.556C16.5835 19.7821 26.2394 9.44734 27.2766 8.56402C28.315 7.67956 29.3101 7.06871 30.8594 7.06871C33.9342 7.06871 36.3281 9.74518 36.3281 12.5092C36.3281 13.9698 36.0757 15.0796 35.3251 16.1494C34.6363 17.131 22.6529 29.6172 21.543 30.7883C20.2891 32.1112 18.9346 33.7805 17.408 34.751C15.1905 36.1608 12.3746 36.6037 9.5203 35.519C7.14611 34.6168 5.50044 32.761 4.42573 30.4256C2.90216 27.1147 3.69854 22.5745 6.23047 19.9074C6.73173 19.3793 7.17492 18.9109 7.6758 18.3824L19.0039 6.42985C19.9572 5.42404 20.8793 4.48368 21.8181 3.46419C23.0563 2.11968 22.4069 0.205359 20.751 0.00956415C19.9421 -0.0860452 19.3348 0.556397 18.9258 0.989358L4.08204 16.6513C2.7141 18.0936 1.99305 19.1928 1.1189 21.0261C0.625285 22.0614 0 24.3512 0 25.863Z" fill="black"/>
-                      </svg>
-                      <input accept="image/*" type="file" name="image" id="id_image" class="box__file" data-multiple-caption="{count} файла выбрано" multiple />
-                      <span class="box__dragndrop input-text"> Перетащите Изображение</span>
-                      <label for="id_image" class="btn btn-primary input-btn">или добавьте</label>
-                    </div>
-                    <div class="box__uploading">Uploading&hellip;</div>
-                    <div class="box__success">Done! <a href="https://css-tricks.com/examples/DragAndDropFileUploading//?submit-on-demand" class="box__restart" role="button">Upload more?</a></div>
-                    <div class="box__error">Error! <span></span>. <a href="https://css-tricks.com/examples/DragAndDropFileUploading//?submit-on-demand" class="box__restart" role="button">Try again!</a></div>
-                  </div>
-            </div>
-             <button id="image_search" type="submit">Поиск</button>
-        </div>
-
-
-  </div>
-
-    </form>
+  <div class="main-container">
+    <div class="container">
+      <h1>Постройте свой маршрут по достопримечательностям</h1>
     </div>
-    <form id="fetchDataForm">
-        <label for="urlInput">Введите адрес:</label><br>
-        <input type="text" id="urlInput" name="urlInput"><br>
-        <button type="submit">Получить данные</button>
-      </form>
+    <div class="city-select-container">
+      <label for="citySelect" class="citi-select-label">Выберите город:</label>
+      <select id="citySelect">
+        <option value="Нижний Новгород">Нижний Новгород</option>
+        <option value="Ярославль">Ярославль</option>
+        <option value="Екатеринбург">Екатеринбург</option>
+        <option value="Владимир">Владимир</option>
+      </select>
+
+    </div>
+    <div class="put-info-container">
+      <div class="row-container">
+        <form id="imageForm" enctype="multipart/form-data">
+          <label for="image">фото</label>
+          <input type="file" id="image" name="image" accept="image/*">
+        </form>
+      </div>
+      <div class="row-container mid-row-container">
+        <p>или</p>
+      </div>
+      <div class="text-input row-container">
+        <label for="text">описание</label>
+        <input type="text" id="text" name="text">
+      </div>
+    </div>
+    <button id="submitBtn">Добавить место</button>
+  </div>
+
+  </div>
+
+  </form>
+  </div>
+  <form id="fetchDataForm">
+    <label for="urlInput">Введите адрес:</label><br>
+    <input type="text" id="urlInput" name="urlInput"><br>
+    <button type="button" id="fetchDataButton">Получить данные</button>
+  </form>
+
 </body>
-<script src='image_loader.js'></script>
-<script src='attract_shower.js'></script>
+<script type="text/javascript">const staticUrl = "{{ STATIC_URL }}";</script>
+<script src="{% static 'front/js/image_loader.js' %}"></script>
+<script src="{% static 'front/js/attract_shower.js' %}"></script>
+
 </html>

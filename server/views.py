@@ -1,9 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-# import folium
 from django.shortcuts import render, redirect
-# Create your views here.
-
+from django.http import JsonResponse
 from .forms import ImageUploadForm
 import json
 import requests
@@ -76,6 +74,9 @@ def text(request):
 #         form = ImageUploadForm()
 #     return render(request, 'index.html', {'form': form})
 
+def custom_redirect(to):
+    return redirect(to)
+
 
 def fetch_OTP(request):
     try:
@@ -87,11 +88,14 @@ def fetch_OTP(request):
         soup = BeautifulSoup(html, 'html.parser')
         description = soup.find('meta', attrs={'name': 'description'})['content']
         image_url = soup.find('meta', property='og:image')['content']
-        return {'description': description, 'image_url': image_url}
+
+        # Возвращаем JsonResponse с вашими данными
+        return JsonResponse({'description': description, 'image_url': image_url})
 
     except Exception as e:
         print('Error in fetch_OTP func:', e)
-        return None
+        return JsonResponse({'error': 'Произошла ошибка при получении данных'}, status=500)
+
 
 
 # def showroute(request, lat1,long1,lat2,long2):

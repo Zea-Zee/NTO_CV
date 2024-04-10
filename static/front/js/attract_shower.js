@@ -1,6 +1,6 @@
 async function fetchDataFromUrl(url) {
     try {
-      const response = await fetch(`/fetch_otp?url=${encodeURIComponent(url)}`);
+        const response = await fetch(`/fetch_otp?url=${encodeURIComponent(url)}`);
         if (!response.ok) {
             throw new Error('Ошибка HTTP: ' + response.status);
         }
@@ -12,8 +12,7 @@ async function fetchDataFromUrl(url) {
     }
 }
 
-document.getElementById('fetchDataForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+document.getElementById('fetchDataButton').addEventListener('click', async function() {
     const url = document.getElementById('urlInput').value;
     const data = await fetchDataFromUrl(url);
     if (data) {

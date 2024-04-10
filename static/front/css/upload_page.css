@@ -1,0 +1,128 @@
+* {
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100vw;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.city-block{
+    height: 50%;
+    width: 100vw;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    margin: auto;
+    text-align: center;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container{
+    padding: 5vh 0;
+    margin: auto;
+}
+
+.put-info-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.row-container{
+    width: 30%;
+    max-width: 30%;
+    margin: auto;
+    text-align: center;
+}
+
+.mid-row-container {
+    display: inline-block;
+    width: 10%;
+    box-sizing: border-box; /* Учитываем внутренние отступы в размере элемента */
+}
+
+.row-container > p {
+    display: inline-block;
+    padding: 0;
+    margin: 0; /* Убираем внешние отступы */
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+}
+
+.content > * {
+    margin-bottom: 10px;
+}
+
+.text-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#submitBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#submitBtn:hover {
+    background-color: #0056b3;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    /* Стили для мобильных устройств */
+    .container {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .content {
+        max-width: none;
+        width: 100%;
+        padding: 0 20px;
+    }
+}
+
+
+.city-select-container {
+    display: flex;
+    align-items: center;
+}
+
+.city-select-label {
+    margin-right: 10px;
+    color: white;
+}
+
+#citySelect {
+    background-color: white;
+    color: black;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.city-select-container{
+    padding: 10px;
+    background-color: white;
+}
