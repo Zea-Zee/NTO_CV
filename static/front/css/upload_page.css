@@ -203,3 +203,30 @@ h1 {
   .selected-places-container{
     font-size: 18px;
   }
+
+.predict-wrapper{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.predict-container{
+    margin: auto;
+    width: 40vw;
+    max-width: 40vw;
+    max-height: 40vw;
+}
+
+#map{
+    margin: auto;
+    width: 40vw;
+    max-width: 40vw;
+    max-height: 40vw;
+}
+
+img {
+    margin: auto;
+    width: 40vw;
+    height: auto
+}

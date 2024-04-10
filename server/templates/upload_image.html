@@ -6,6 +6,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel='stylesheet' href="{% static 'front/css/upload_page.css' %}">
+  <script src="https://api-maps.yandex.ru/2.1/?apikey=cca8aae9-b269-402b-b2a3-a9d9f65059ef&lang=ru_RU"></script>
+  <script src="https://yandex.st/jquery/2.2.3/jquery.min.js" type="text/javascript"></script>
+    type="text/javascript"></script>
   <title>Загрузить изображение</title>
 </head>
 
@@ -54,6 +57,8 @@
       </div>
     </div>
     <button id="getSpots" type="button" class='submitBtn'>Показать результаты</button>
+
+
     <form id="fetchDataForm">
       {% csrf_token %}
       <label for="urlInput">Введите адрес:</label><br>
@@ -61,9 +66,12 @@
       <button type="submit" id="fetchDataButton">Получить данные</button>
     </form>
 
+    <div class="predict-wrapper">
+      <div id="map" style="width: 600px; height: 400px"></div>
+    </div>
+  </div>
 </body>
 <script type="text/javascript">const staticUrl = "{{ STATIC_URL }}";</script>
 <script src="{% static 'front/js/image_loader.js' %}"></script>
 <script src="{% static 'front/js/attract_shower.js' %}"></script>
-
 </html>

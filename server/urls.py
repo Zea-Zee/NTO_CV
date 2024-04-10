@@ -12,4 +12,6 @@ urlpatterns = [
     path('text_search/', views.text, name='text_search'),
     path('fetch_otp/', views.fetch_OTP, name='fetch_otp'),
     path('predict_front', views.predict_front, name='predict_front'),
+    path('get_places_from_photo', views.predict_image_api_bridge, name='predict_image_api_bridge'),
+    path('get_places_from_text', views.predict_text_api_bridge, name='predict_text_api_bridge'),
 ]

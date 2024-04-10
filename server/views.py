@@ -3,9 +3,53 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .forms import ImageUploadForm
+
+
 import json
 import requests
 from bs4 import BeautifulSoup
+import matplotlib
+import matplotlib.pyplot as plt
+import io
+import base64
+import os
+
+
+matplotlib.use('Agg')
+
+
+def build_plot(data):
+    names = [item['Name'] if len(item['Name']) < 12 else item['Name'][:12] + '...' for item in data]
+    probs = [item['prob'] for item in data]
+
+    colors = ['#d199ff', '#99e6ff', '#80ff80', '#ff9', '#ffc966']
+    plt.bar(names, probs, color=colors)
+    # plt.xlabel('Name')
+    # plt.ylabel('Probability')
+    # plt.title('Probability Distribution')
+    plt.xticks(rotation=15)
+    # plt.grid(True)
+
+    img_data = io.BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)
+    img_base64 = base64.b64encode(img_data.read()).decode('utf-8')
+    # plt.show()
+    # plt.savefig('../static')
+    current_directory = os.getcwd()
+    print("Текущая директория:", current_directory)
+    plt.close()
+    return img_base64
+
+
+# build_plot([
+#         {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "city": None,  "OSM": "way/38411380", "WikiData": "Q37996725", "Rate": None, "Lon": 60.600349, "Lat": 56.845398, "prob": 0.5},
+#         {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "city": None, "OSM": "node/2885181131", "WikiData": "Q55209768", "Rate": None, "Lon": 60.601315, "Lat": 56.834167, "prob": 0.3},
+#         {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "city": None, "OSM": "way/38581890", "WikiData": "Q55209768", "Rate": None, "Lon": 60.602409, "Lat": 56.835133, "prob": 0.15},
+#         {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "city": None, "OSM": "node/1930476141", "WikiData": "Q55154121", "Rate": None, "Lon": 60.60743, "Lat": 56.833691, "prob": 0.04},
+#         {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "city": None, "OSM": "node/3002726097", "WikiData": "Q55232375", "Rate": None, "Lon": 60.607075	, "Lat": 56.834225, "prob": 0.01}
+#     ])
+
 
 # import polyline
 # import folium
@@ -98,42 +142,99 @@ def fetch_OTP(request):
     
 
 #ЗАГЛУШКА
-def predict_photo(photo, city):
+def predict_photo(photo, city=None):
     result = [
-        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "OSM": "way/38411380", "WikiData": "Q37996725", "Lon": 60.600349, "Lat": 56.845398},
-        {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "OSM": "node/2885181131", "WikiData": "Q55209768", "Lon": 60.601315, "Lat": 56.834167},
-        {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "OSM": "way/38581890", "WikiData": "Q55209768", "Lon": 60.602409, "Lat": 56.835133},
-        {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "OSM": "node/1930476141", "WikiData": "Q55154121", "Lon": 60.60743, "Lat": 56.833691},
-        {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "OSM": "node/3002726097", "WikiData": "Q55232375", "Lon": 60.607075	, "Lat": 56.834225}
+        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "city": None,  "OSM": "way/38411380", "WikiData": "Q37996725", "Rate": None, "Lon": 60.600349, "Lat": 56.845398, "prob": 0.5},
+        {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "city": None, "OSM": "node/2885181131", "WikiData": "Q55209768", "Rate": None, "Lon": 60.601315, "Lat": 56.834167, "prob": 0.3},
+        {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "city": None, "OSM": "way/38581890", "WikiData": "Q55209768", "Rate": None, "Lon": 60.602409, "Lat": 56.835133, "prob": 0.15},
+        {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "city": None, "OSM": "node/1930476141", "WikiData": "Q55154121", "Rate": None, "Lon": 60.60743, "Lat": 56.833691, "prob": 0.04},
+        {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "city": None, "OSM": "node/3002726097", "WikiData": "Q55232375", "Rate": None, "Lon": 60.607075	, "Lat": 56.834225, "prob": 0.01}
     ]
     return result
 
 
 #ЗАГЛУШКА
-def predict_text(request, city):
+def predict_text(text, city=None):
     result = [
-        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "OSM": "way/38411380", "WikiData": "Q37996725", "Lon": 60.600349, "Lat": 56.845398},
-        {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "OSM": "node/2885181131", "WikiData": "Q55209768", "Lon": 60.601315, "Lat": 56.834167},
-        {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "OSM": "way/38581890", "WikiData": "Q55209768", "Lon": 60.602409, "Lat": 56.835133},
-        {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "OSM": "node/1930476141", "WikiData": "Q55154121", "Lon": 60.60743, "Lat": 56.833691},
-        {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "OSM": "node/3002726097", "WikiData": "Q55232375", "Lon": 60.607075	, "Lat": 56.834225}
+        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "city": None,  "OSM": "way/38411380", "WikiData": "Q37996725", "Rate": None, "Lon": 60.600349, "Lat": 56.845398, "prob": 0.5},
+        {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "city": None, "OSM": "node/2885181131", "WikiData": "Q55209768", "Rate": None, "Lon": 60.601315, "Lat": 56.834167, "prob": 0.3},
+        {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "city": None, "OSM": "way/38581890", "WikiData": "Q55209768", "Rate": None, "Lon": 60.602409, "Lat": 56.835133, "prob": 0.15},
+        {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "city": None, "OSM": "node/1930476141", "WikiData": "Q55154121", "Rate": None, "Lon": 60.60743, "Lat": 56.833691, "prob": 0.04},
+        {"XID": "N3002726097", "Name": "№27 Дом Г.Н. Скрябина", "kind": "architecture", "city": None, "OSM": "node/3002726097", "WikiData": "Q55232375", "Rate": None, "Lon": 60.607075	, "Lat": 56.834225, "prob": 0.01}
     ]
     return result
 
 
 from django.http import JsonResponse
 
+
+def predict_image_frontend_bridge(data, city, isphoto):
+    if isphoto:
+        res = predict_photo(data, city)
+    else:
+        res = predict_text(data, city)
+    return [{key: value for key, value in item.items() if key not in ['Rate', 'city']} for item in res]
+
+
+def predict_image_api_bridge(request):
+    if request.method == 'POST':
+        city = request.POST.get('city', None)
+        if city is None:
+            if 'photo' in request.FILES:
+                result = predict_photo(request.FILES['photo'])
+            else:
+                return JsonResponse({'error': 'Некорректный запрос'}, status=400)
+
+        else:
+            if 'photo' in request.FILES:
+                result = predict_photo(request.FILES['photo'], city)
+            else:
+                return JsonResponse({'error': 'Некорректный запрос'}, status=400)
+        
+        print("Поля в запросе:")
+        print(request.POST.keys())
+        result =  [{key: value for key, value in item.items() if key not in ['OSM', 'WikiData', 'Rate']} for item in result]
+        return JsonResponse(result, safe=False)
+    else:
+        return JsonResponse({'error': 'Метод запроса должен быть POST'}, status=405)
+    
+
+def predict_text_api_bridge(request):
+    if request.method == 'POST':
+        city = request.POST.get('city', None)
+        if city is None:
+            if 'text' in request.POST:
+                result = predict_text(request.POST['text'])
+            else:
+                return JsonResponse({'error': 'Некорректный запрос'}, status=400)
+        else:
+            if 'text' in request.POST:
+                result = predict_text(request.POST['text'], city)
+            else:
+                return JsonResponse({'error': 'Некорректный запрос'}, status=400)
+        
+        print("Поля в запросе:")
+        print(request.POST.keys())
+        result = sorted(result, key=lambda d: d['prob'], reverse=True)
+        result = [{key: value for key, value in item.items() if key not in ['OSM', 'WikiData', 'Rate', "prob"]} for item in result]
+        return JsonResponse(result, safe=False)
+    else:
+        return JsonResponse({'error': 'Метод запроса должен быть POST'}, status=405)
+
+
 def predict_front(request):
-    print(f"req {request}")
     if request.method == 'POST':
         city = request.POST['city']
+        # city = request.POST.get('city', None)
         if 'photo' in request.FILES:
-            result = predict_photo(request.FILES['photo'], city)
+            spots = predict_image_frontend_bridge(request.FILES['photo'], city, True)
         elif 'text' in request.POST:
-            result = predict_text(request.POST['text'], city)
+            spots = predict_image_frontend_bridge(request.POST['text'], city, False)
         else:
             return JsonResponse({'error': 'Некорректный запрос'}, status=400)
-        print(f'RESULT IS ::::::{request}::::::')
+        result = {}
+        result['spots'] = spots
+        result['image'] = build_plot(spots)
         return JsonResponse(result, safe=False)
     else:
         return JsonResponse({'error': 'Метод запроса должен быть POST'}, status=405)
