@@ -239,3 +239,7 @@ img {
     display: none;
     flex-direction: column;
 }
+
+#routeButton{
+    display: none;
+}

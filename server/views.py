@@ -188,7 +188,8 @@ def predict_image_frontend_bridge(data, city, isphoto):
 
     for item in res:
         modal_url = 'https://opentripmap.com/ru/card/' + item['XID']
-        p_content = fetch_content(modal_url)
+        # p_content = fetch_content(modal_url)
+        p_content = 'empty'
         item['text_from_div'] = p_content
         # item['image_base64'] = img_base64
 

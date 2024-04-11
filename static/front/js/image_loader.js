@@ -24,6 +24,10 @@ function getCookie(name) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+	const predictWrapper = document.querySelector('.predict-wrapper');
+	let mapDiv;
+	let routeButton = document.getElementById('routeButton');
+	routeButton.addEventListener('click', buildRouteFromCurrentLocation);
 	let colorButtonsContainer = document.getElementById('colorButtons');
 	let placesList = document.querySelector('#placesList')
 	let cityBlock = document.querySelector('.city-block');
@@ -131,9 +135,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				ymaps.ready(function () {
 					console.log('creating map');
-					var myMap;
+					if (myMap) {
+						myMap.geoObjects.removeAll();
+
+						mapDiv = document.createElement('div');
+						mapDiv.id = 'map';
+						mapDiv.style.width = '600px';
+						mapDiv.style.height = '400px';
+						predictWrapper.appendChild(mapDiv);
+					}
 					ymaps.geolocation.get({
-						provider: 'yandex'
+						provider: 'browser'
 					}).then(function (result) {
 						myMap = new ymaps.Map("map", {
 							center: result.geoObjects.get(0).geometry.getCoordinates(),
@@ -149,7 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
 						});
 						magentaSpot.events.add('click', function (e) {
 							console.log(data.spots[0]);
-							createAndCenterContainer(data.spots[0]['modal-dialog'])
 						});
 						myMap.geoObjects.add(magentaSpot)
 
@@ -225,9 +236,21 @@ document.addEventListener("DOMContentLoaded", function () {
 						placesList.style.display = 'flex'
 						const listItem = document.createElement('div');
 						listItem.innerHTML = `
-            <p>${spot.Name.substring(0, 10)} ${spot.Lon} ${spot.Lat}</p>
+            <p>${spot.Name} ${spot.Lon} ${spot.Lat}</p>
         `;
+						var mapElement = document.getElementById('map');
+
+						// Проверяем, существует ли элемент
+						if (mapElement) {
+							// Если элемент существует, удаляем его
+							mapElement.parentNode.removeChild(mapElement);
+						} else {
+							// Если элемент не найден, выводим сообщение об ошибке
+							console.log('Элемент с id "map" не найден.');
+						}
 						placesList.appendChild(listItem);
+
+						routeButton.style.display = 'block'
 					});
 				});
 
@@ -257,31 +280,111 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 
-	function createAndCenterContainer(containerText) {
-		// Создаем временный div элемент
-		var tempDiv = document.createElement('div');
+	function buildRouteFromCurrentLocation() {
+		fetchDataForm.style.display = 'none';
+		getSpots.style.display = 'none';
 
-		// Задаем текст контейнера для временного div
-		tempDiv.innerHTML = containerText;
+		ymaps.geolocation.get({
+			provider: 'auto',
+			autoReverseGeocode: true
+		}).then(function (result) {
+			// Получение координат текущего местоположения
+			var userCoords = result.geoObjects.get(0).geometry.getCoordinates();
+			console.log('Координаты текущего местоположения:', userCoords);
 
-		// Получаем размеры окна браузера
-		var windowWidth = window.innerWidth;
-		var windowHeight = window.innerHeight;
+			// Создание копии списка placesToVisit
+			var placesCopy = JSON.parse(JSON.stringify(placesToVisit));
+			// Массив для хранения новых мест
+			var newPlaces = [];
 
-		// Получаем размеры контейнера
-		var containerWidth = tempDiv.offsetWidth;
-		var containerHeight = tempDiv.offsetHeight;
+			// Добавляем текущее местоположение пользователя в список newPlaces
+			newPlaces.push({
+				'Lat': userCoords[0],
+				'Lon': userCoords[1],
+				'Name': 'Моё местоположение'
+			});
 
-		// Рассчитываем координаты для размещения контейнера по центру
-		var leftPosition = (windowWidth - containerWidth) / 2;
-		var topPosition = (windowHeight - containerHeight) / 2;
-
-		// Устанавливаем позицию абсолютно по центру
-		tempDiv.style.position = 'absolute';
-		tempDiv.style.left = leftPosition + 'px';
-		tempDiv.style.top = topPosition + 'px';
-
-		// Добавляем временный div в самый верхний уровень DOM (поверх всего)
-		document.body.appendChild(tempDiv);
+			// Построение маршрутов от текущего местоположения пользователя
+			// до каждой точки из списка placesToVisit
+			buildRoute(newPlaces[0], placesCopy, newPlaces);
+			drawRoute(newPlaces);
+		}).catch(function (error) {
+			console.error('Ошибка при получении местоположения:', error);
+		});
 	}
-});
+
+	// Функция для построения маршрутов от одной точки до всех остальных
+	function buildRoute(startPlace, placesToVisit, newPlaces) {
+		if (placesToVisit.length === 0) {
+			console.log('Маршрут построен');
+			return;
+		}
+
+		var closestPlace = findClosestPlace(startPlace, placesToVisit);
+		console.log('Ближайшее место:', closestPlace);
+
+		placesToVisit = placesToVisit.filter(function (place) {
+			return place !== closestPlace;
+		});
+		console.log(`new free placelist ${JSON.stringify(placesToVisit)}`);
+		newPlaces.push(closestPlace);
+		console.log(`new route placelist ${JSON.stringify(newPlaces)}`);
+		buildRoute(closestPlace, placesToVisit, newPlaces);
+	}
+
+	// Функция для нахождения ближайшего места к данным координатам
+	function findClosestPlace(startPlace, placesToVisit) {
+		var closestDistance = Infinity;
+		var closestPlace = null;
+
+		placesToVisit.forEach(function (place) {
+			var distance = calculateDistance([startPlace.Lon, startPlace.Lat], [place.Lon, place.Lat]);
+
+			console.log(`distance: ${distance}  ${closestDistance}`);
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestPlace = place;
+			}
+		});
+
+		return closestPlace;
+	}
+
+	// Функция для вычисления расстояния между двумя точками на карте (гипотенуза)
+	function calculateDistance(coords1, coords2) {
+		console.log(`start coords: ${coords1}
+		end coords: ${coords2}
+		`);
+		var dx = coords2[0] - coords1[0];
+		var dy = coords2[1] - coords1[1];
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+
+	function drawRoute(places) {
+		let map2 = document.querySelector('#map2')
+		map2.style.display = 'block'
+		ymaps.ready(function () {
+			var myMap = new ymaps.Map('map2', {
+				center: [places[0].Lat, places[0].Lon],
+				zoom: 9,
+				controls: []
+			});
+
+			let coords = places.map(function (place) {
+				return [place.Lat, place.Lon];
+			})
+			console.log(`dots for route are: ${coords}`);
+			var multiRoute = new ymaps.multiRouter.MultiRoute({
+				referencePoints: coords
+			}, {
+				// Автоматически устанавливать границы карты так,
+				// чтобы маршрут был виден целиком.
+				boundsAutoApply: true
+			});
+
+			// Добавление маршрута на карту.
+			myMap.geoObjects.add(multiRoute);
+		})
+	}
+})
