@@ -9,6 +9,7 @@ let placesToVisit = [];
 let blockShowButton = false;
 let buttonListener;
 let oldListeners = []
+let buttonSpots = []
 
 
 function getCookie(name) {
@@ -224,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById('map').style.display = 'flex';
 
 				colorButtons.forEach(function (button, i) {
-
+					buttonSpots[i] = data.spots[i]
 					let spotName = data.spots[i]['Name'];
 					spotName = spotName.substring(0, 14);
 					let spotNameElement = document.createElement('span');
@@ -236,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					if(oldListeners.length == colorButtons.length) button.removeEventListener('click', oldListeners[i]);
 					oldListeners[i] = button.addEventListener('click', function () {
 						selectedColor = this.getAttribute('data-color');
-						let spot = data.spots[i];
+						let spot = buttonSpots[i];
 						placesToVisit.push(spot);
 						colorButtonsContainer.style.display = 'none';
 						document.getElementById('map').style.display = 'none';
