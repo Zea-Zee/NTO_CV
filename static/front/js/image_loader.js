@@ -7,6 +7,8 @@ let myMap;
 let selectedColor;
 let placesToVisit = [];
 let blockShowButton = false;
+let buttonListener;
+let oldListeners = []
 
 
 function getCookie(name) {
@@ -230,8 +232,9 @@ document.addEventListener("DOMContentLoaded", function () {
 					button.appendChild(spotNameElement);
 					button.style.backgroundColor = button.getAttribute('data-color');
 					button.querySelector('span').style.backgroundColor = button.getAttribute('data-color');
-
-					button.addEventListener('click', function () {
+					
+					if(oldListeners.length == colorButtons.length) button.removeEventListener('click', oldListeners[i]);
+					oldListeners[i] = button.addEventListener('click', function () {
 						selectedColor = this.getAttribute('data-color');
 						let spot = data.spots[i];
 						placesToVisit.push(spot);
@@ -257,6 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						placesList.appendChild(listItem);
 
 						routeButton.style.display = 'flex'
+						placesToVisit = []
 					});
 				});
 
