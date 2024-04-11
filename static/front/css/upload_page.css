@@ -3,6 +3,7 @@
     user-select: none;
     margin: 0;
     padding: 0;
+    text-align: center;
 }
 
 .montserrat-<uniquifier> {
@@ -267,6 +268,7 @@ img {
 
 #routeButton{
     display: none;
+    margin-top: 2vh;
 }
 
 
@@ -277,7 +279,14 @@ footer{
     margin-bottom: 0;
 }
 
+.route-text{
+    margin: 1vh auto;
+}
 
+.route-header{
+    margin: 1vh auto;
+    margin-top: 3vh;
+}
 
 
 @media (max-aspect-ratio: 1/1) {

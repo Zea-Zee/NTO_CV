@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						placesList.style.display = 'flex'
 						const listItem = document.createElement('div');
 						listItem.innerHTML = `
-            <p>${spot.Name} ${spot.Lon} ${spot.Lat}</p>
+            <p class='route-text'>${spot.Name} ${spot.Lon} ${spot.Lat}</p>
         `;
 						var mapElement = document.getElementById('map');
 
@@ -313,9 +313,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			// Построение маршрутов от текущего местоположения пользователя
 			// до каждой точки из списка placesToVisit
 			buildRoute(newPlaces[0], placesCopy, newPlaces);
-			placesList.innerHTML = '<h4>Ваш новый оптимизированный машрут</h4>'
+			placesList.innerHTML = '<h4 class="route-header">Ваш новый оптимизированный машрут</h4>'
 			newPlaces.forEach(spot => {
-				placesList.innerHTML += `<p>${spot.Name} ${spot.Lon} ${spot.Lat}</p>`
+				placesList.innerHTML += `<p class='rout-text'>${spot.Name} ${spot.Lon} ${spot.Lat}</p>`
 			});
 			placesList.innerHTML += `<h4>Откройте его в яндекс карты и наслаждайтесь
 			(Если хотите построить новый маршрут, обновите страницу)</h4>`
