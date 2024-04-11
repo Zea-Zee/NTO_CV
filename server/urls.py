@@ -3,13 +3,22 @@ from django.shortcuts import redirect
 from . import views
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ImageViewSet, PlacesViewSet, CategoryViewSet
 
+router = DefaultRouter()
+router.register(r'images', ImageViewSet, basename='image')
+router.register(r'places', PlacesViewSet, basename='place')
+router.register(r'categories', CategoryViewSet, basename='category')
 
 urlpatterns = [
-    path('', lambda request: views.custom_redirect('upload/')),  # Перенаправление с корневой страницы на upload/
+    path('', views.upload_image, name='index'),  # Перенаправление с корневой страницы на upload/
     path('upload/', views.upload_image, name='upload_image'),
     path('image_search/', views.image, name='image_search'),
     path('text_search/', views.text, name='text_search'),
     path('fetch_otp/', views.fetch_OTP, name='fetch_otp'),
-    # path('<str:lat1>,<str:long1>,<str:lat2>,<str:long2>',views.showroute,name='showroute'),
+    path('api/', include(router.urls)),
+    path('predict_front', views.predict_front, name='predict_front'),
+    path('get_places_from_photo', views.predict_image_api_bridge, name='predict_image_api_bridge'),
+    path('get_places_from_text', views.predict_text_api_bridge, name='predict_text_api_bridge'),
 ]

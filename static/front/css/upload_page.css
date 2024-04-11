@@ -1,0 +1,245 @@
+* {
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100vw;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.city-block {
+    height: 40vh;
+    max-height: 40vh;
+    width: 100vw;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.city-block{
+    display: flex;
+    flex-direction: column;
+}
+
+#city-name {
+    margin-left: 10vw;
+    margin-top: 10vh;
+    max-width: 70vw;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+#city-description {
+    margin-left: 10vw;
+    max-width: 70vw;
+    margin-top: 0;
+    font-size: 18px;
+    margin-bottom: 0;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+
+h1 {
+    margin: 3vh auto;
+    padding: 0;
+    text-align: center;
+    font-size: 24px;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container{
+    padding: 5vh 0;
+    margin: auto;
+}
+
+.put-info-container{
+    margin: 1vh auto;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.row-container{
+    width: 30%;
+    max-width: 30%;
+    margin: auto;
+    text-align: center;
+}
+
+.mid-row-container {
+    display: inline-block;
+    width: 10%;
+    box-sizing: border-box; /* Учитываем внутренние отступы в размере элемента */
+}
+
+.row-container > p {
+    display: inline-block;
+    padding: 0;
+    margin: 0; /* Убираем внешние отступы */
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+}
+
+.content > * {
+    margin-bottom: 10px;
+}
+
+.text-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.submitBtn {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.submitBtn:hover {
+    background-color: #ccc;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    /* Стили для мобильных устройств */
+    .container {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .content {
+        max-width: none;
+        width: 100%;
+        padding: 0 20px;
+    }
+}
+
+.city-select-container{
+    margin: auto;
+    margin-top: 2vh;
+}
+
+#citySelect {
+    appearance: none; /* Убираем стандартный стиль элемента */
+    -webkit-appearance: none; /* Для Safari и Chrome */
+    -moz-appearance: none; /* Для Firefox */
+    background-color: transparent; /* Прозрачный фон */
+    border: 2px solid #000; /* Белая рамка */
+    padding: 8px 20px; /* Отступы */
+    border-radius: 5px; /* Скругление углов */
+    font-size: 16px; /* Размер шрифта */
+    cursor: pointer; /* Изменение курсора при наведении */
+    transition: all 0.3s ease; /* Плавное изменение свойств */
+}
+
+#citySelect:hover {
+    background-color: #f8f9fa; /* Изменение фона при наведении */
+}
+
+#citySelect:focus {
+    outline: none; /* Убираем обводку при фокусе */
+    border-color: #555; /* Изменение цвета рамки при фокусе */
+}
+
+#imageForm {
+    display: flex;
+    align-items: center;
+  }
+  
+  .custom-file-upload {
+    cursor: pointer;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-file-upload:hover {
+    background-color: #0056b3;
+  }
+
+  
+  .text-input textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+  }
+  
+  .text-input label {
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .selected-places-container{
+    font-size: 18px;
+  }
+
+.predict-wrapper{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.predict-container{
+    margin: auto;
+    width: 40vw;
+    max-width: 40vw;
+    max-height: 40vw;
+}
+
+#map{
+    margin: auto;
+    width: 40vw;
+    max-width: 40vw;
+    max-height: 40vw;
+}
+
+img {
+    margin: auto;
+    width: 40vw;
+    height: auto
+}
+
+#colorButtons{
+    display: none;
+}
+
+#placesList{
+    display: none;
+    flex-direction: column;
+}
+
+#routeButton{
+    display: none;
+}

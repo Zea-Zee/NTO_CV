@@ -1,177 +1,447 @@
-'use strict';
+let Nn = 'Город на Волге, основанный Великим князем Георгием Всеволодовичем в 1221 году. Богат историей и культурным наследием, включая Кремль и архитектуру.';
+let Yarosl = 'Жемчужина Золотого кольца, основана Ярославом Мудрым в 1010 году. Соборы, монастыри и старинные улицы переносят в сказочное прошлое.';
+let Ekat = 'Город на Урале, сочетающий историю и современность. Привлекает музеями, парками и культурной сценой.';
+let Vladimir = 'Жемчужина Золотого кольца, основана Владимиром Мономахом в 1108 году. Привлекает красивой архитектурой и историческими памятниками.';
+let selectedCity = 'Нижний Новгород';
+let myMap;
+let selectedColor;
+let placesToVisit = [];
+let blockShowButton = false;
+let buttonListener;
+let oldListeners = []
+let buttonSpots = []
 
 
-(function(e,t,n){var r=e.querySelectorAll("html")[0];r.className=r.className.replace(/(^|\s)no-js(\s|$)/,"$1js$2")})(document,window,0);
-
-	;( function ( document, window, index )
-	{
-		// feature detection for drag&drop upload
-		var isAdvancedUpload = function()
-			{
-				var div = document.createElement( 'div' );
-				return ( ( 'draggable' in div ) || ( 'ondragstart' in div && 'ondrop' in div ) ) && 'FormData' in window && 'FileReader' in window;
-			}();
-
-
-		// applying the effect for every form
-		var forms = document.querySelectorAll( '.box' );
-		Array.prototype.forEach.call( forms, function( form )
-		{
-			var input		 = form.querySelector( 'input[type="file"]' ),
-				label		 = form.querySelector( 'label' ),
-				errorMsg	 = form.querySelector( '.box__error span' ),
-				restart		 = form.querySelectorAll( '.box__restart' ),
-				droppedFiles = false,
-				showFiles	 = function( files )
-				{
-					label.textContent = files.length > 1 ? ( input.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', files.length ) : files[ 0 ].name;
-				},
-				triggerFormSubmit = function()
-				{
-					var event = document.createEvent( 'HTMLEvents' );
-					event.initEvent( 'submit', true, false );
-					form.dispatchEvent( event );
-				};
-
-			// letting the server side to know we are going to make an Ajax request
-			var ajaxFlag = document.createElement( 'input' );
-			ajaxFlag.setAttribute( 'type', 'hidden' );
-			ajaxFlag.setAttribute( 'name', 'ajax' );
-			ajaxFlag.setAttribute( 'value', 1 );
-			form.appendChild( ajaxFlag );
-
-			// automatically submit the form on file select
-			input.addEventListener( 'change', function( e )
-			{
-				showFiles( e.target.files );
-
-
-			});
-
-			// drag&drop files if the feature is available
-			if( isAdvancedUpload )
-			{
-				form.classList.add( 'has-advanced-upload' ); // letting the CSS part to know drag&drop is supported by the browser
-
-				[ 'drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop' ].forEach( function( event )
-				{
-					form.addEventListener( event, function( e )
-					{
-						// preventing the unwanted behaviours
-						e.preventDefault();
-						e.stopPropagation();
-					});
-				});
-				[ 'dragover', 'dragenter' ].forEach( function( event )
-				{
-					form.addEventListener( event, function()
-					{
-						form.classList.add( 'is-dragover' );
-					});
-				});
-				[ 'dragleave', 'dragend', 'drop' ].forEach( function( event )
-				{
-					form.addEventListener( event, function()
-					{
-						form.classList.remove( 'is-dragover' );
-					});
-				});
-				form.addEventListener( 'drop', function( e )
-				{
-					droppedFiles = e.dataTransfer.files; // the files that were dropped
-					showFiles( droppedFiles );
-
-									});
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
 			}
+		}
+	}
+	return cookieValue;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+	const predictWrapper = document.querySelector('.predict-wrapper');
+	let mapDiv;
+	let routeButton = document.getElementById('routeButton');
+	routeButton.addEventListener('click', buildRouteFromCurrentLocation);
+	let colorButtonsContainer = document.getElementById('colorButtons');
+	let placesList = document.querySelector('#placesList')
+	let cityBlock = document.querySelector('.city-block');
+	cityBlock.style.backgroundImage = "url('../../static/front/images/Nizhniy Novgorod.jpg')";
+
+	let citySelect = document.getElementById('citySelect');
+	let fetchDataForm = document.querySelector('.put-info-container');
+	let imageForm = document.querySelector('#imageForm')
+	let descriptionForm = document.querySelector('#descriptionForm')
+
+	let getSpots = document.getElementById('getSpots');
+
+	let imageInput = document.getElementById('image');
+	let descriptionInput = document.getElementById('text');
+
+	function checkInputs() {
+		if (imageInput.files.length > 0) {
+			descriptionInput.disabled = true;
+		} else {
+			descriptionInput.disabled = false;
+		}
+		if (descriptionInput.value.trim() !== '') {
+			imageInput.disabled = true;
+		} else {
+			imageInput.disabled = false;
+		}
+	}
+
+	imageInput.addEventListener('input', checkInputs);
+	descriptionInput.addEventListener('input', checkInputs);
+
+	citySelect.addEventListener('change', function () {
+		selectedCity = citySelect.value;
+		let description = '';
+		let imagePath = '';
+		switch (selectedCity) {
+			case 'Нижний Новгород':
+				imagePath = '../../static/front/images/Nizhniy Novgorod.jpg';
+				description = Nn;
+				break;
+			case 'Ярославль':
+				imagePath = '../../static/front/images/Yaroslavl.png';
+				description = Yarosl;
+				break;
+			case 'Екатеринбург':
+				imagePath = '../../static/front/images/Ekaterinburg.jpeg';
+				description = Ekat;
+				break;
+			case 'Владимир':
+				imagePath = '../../static/front/images/Vladimir.jpg';
+				description = Vladimir;
+				break;
+		}
+
+		let cityBlock = document.querySelector('.city-block');
+		cityBlock.style.backgroundImage = "url('" + imagePath + "')";
+		document.querySelector('#city-name').innerText = selectedCity;
+		document.querySelector('#city-description').innerText = description;
+	});
+
+	getSpots.addEventListener('click', function (event) {
+		if(blockShowButton) return;
+		blockShowButton = true;
+		event.preventDefault();
+		let formData = new FormData();
+		let imageInput = document.getElementById('image');
+		let descriptionInput = document.getElementById('text');
+
+		if (imageInput.files && imageInput.files.length > 0) {
+			formData.append('photo', imageInput.files[0]);
+		} else {
+			formData.append('text', descriptionInput.value);
+		}
+		formData.append('city', selectedCity);
+
+		sendData(formData);
+		imageInput.value = '';
+		descriptionInput.value = '';
+		imageInput.disabled = false;
+		descriptionInput.disabled = false;
+	});
 
 
-			// if the form was submitted
-			form.addEventListener( 'submit', function( e )
-			{
-				// preventing the duplicate submissions if the current one is in progress
-				if( form.classList.contains( 'is-uploading' ) ) return false;
+	function sendData(formData) {
+		const csrftoken = getCookie('csrftoken');
+		console.log(csrftoken)
+		fetch('/predict_front', {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': csrftoken
+			},
+			body: formData
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log(data);
+				if (data.image) {
+					addPredictedImage(data.image);
+				} else {
+					console.log(`No data available ${data}`);
+				}
 
-				form.classList.add( 'is-uploading' );
-				form.classList.remove( 'is-error' );
 
-				if( isAdvancedUpload ) // ajax file upload for modern browsers
-				{
-					e.preventDefault();
+				ymaps.ready(function () {
+					console.log('creating map');
+					if (myMap) {
+						myMap.geoObjects.removeAll();
 
-					// gathering the form data
-					var ajaxData = new FormData( form );
-					if( droppedFiles )
-					{
-						Array.prototype.forEach.call( droppedFiles, function( file )
-						{
-							ajaxData.append( input.getAttribute( 'name' ), file );
-						});
+						mapDiv = document.createElement('div');
+						mapDiv.id = 'map';
+						mapDiv.style.width = '600px';
+						mapDiv.style.height = '400px';
+						mapDiv.style.display = 'flex';
+						predictWrapper.appendChild(mapDiv);
 					}
+					ymaps.geolocation.get({
+						provider: 'browser'
+					}).then(function (result) {
+						myMap = new ymaps.Map("map", {
+							center: result.geoObjects.get(0).geometry.getCoordinates(),
+							zoom: 12,
+						});
+						myMap.geoObjects.add(result.geoObjects);
 
-					// ajax request
-					var ajax = new XMLHttpRequest();
-					ajax.open( form.getAttribute( 'method' ), form.getAttribute( 'action' ), true );
+						let magentaSpot = new ymaps.Placemark([data.spots[0].Lat, data.spots[0].Lon], {
+							iconContent: data.spots[0].prob,
+							balloonContent: data.spots[0].text_from_div
+						}, {
+							preset: 'islands#violetStretchyIcon'
+						});
+						magentaSpot.events.add('click', function (e) {
+							console.log(data.spots[0]);
+						});
+						myMap.geoObjects.add(magentaSpot)
 
-					ajax.onload = function()
-					{
-						form.classList.remove( 'is-uploading' );
-						if( ajax.status >= 200 && ajax.status < 400 )
-						{
-							var data = JSON.parse( ajax.responseText );
-							form.classList.add( data.success == true ? 'is-success' : 'is-error' );
-							if( !data.success ) errorMsg.textContent = data.error;
-						}
-						else alert( 'Error. Please, contact the webmaster!' );
-					};
 
-					ajax.onerror = function()
-					{
-						form.classList.remove( 'is-uploading' );
-						alert( 'Error. Please, try again!' );
-					};
+						let blueSpot = new ymaps.Placemark([data.spots[1].Lat, data.spots[1].Lon], {
+							// iconContent: data.spots[1].prob
+							iconContent: data.spots[1].prob
+							,
+							balloonContent: data.spots[1].text_from_div
+						}, {
+							preset: 'islands#blueStretchyIcon'
+						});
+						myMap.geoObjects.add(blueSpot)
 
-					ajax.send( ajaxData );
-				}
-				else // fallback Ajax solution upload for older browsers
-				{
-					var iframeName	= 'uploadiframe' + new Date().getTime(),
-						iframe		= document.createElement( 'iframe' );
+						let greenSpot = new ymaps.Placemark([data.spots[2].Lat, data.spots[2].Lon], {
+							iconContent: data.spots[2].prob,
+							balloonContent: data.spots[2].text_from_div
+						}, {
+							preset: 'islands#greenStretchyIcon'
+						});
+						myMap.geoObjects.add(greenSpot)
 
-						$iframe		= $( '<iframe name="' + iframeName + '" style="display: none;"></iframe>' );
+						let yellowSpot = new ymaps.Placemark([data.spots[3].Lat, data.spots[3].Lon], {
+							iconContent: data.spots[3].prob,
+							balloonContent: data.spots[3].text_from_div
+						}, {
+							preset: 'islands#yellowStretchyIcon'
+						});
+						myMap.geoObjects.add(yellowSpot)
 
-					iframe.setAttribute( 'name', iframeName );
-					iframe.style.display = 'none';
+						let orangeSpot = new ymaps.Placemark([data.spots[4].Lat, data.spots[4].Lon], {
+							iconContent: data.spots[4].prob,
+							balloonContent: data.spots[4].text_from_div
+						}, {
+							preset: 'islands#orangeStretchyIcon'
+						});
+						myMap.geoObjects.add(orangeSpot)
+						blockShowButton = false
 
-					document.body.appendChild( iframe );
-					form.setAttribute( 'target', iframeName );
-
-					iframe.addEventListener( 'load', function()
-					{
-						var data = JSON.parse( iframe.contentDocument.body.innerHTML );
-						form.classList.remove( 'is-uploading' )
-						form.classList.add( data.success == true ? 'is-success' : 'is-error' )
-						form.removeAttribute( 'target' );
-						if( !data.success ) errorMsg.textContent = data.error;
-						iframe.parentNode.removeChild( iframe );
+					}).catch(function (err) {
+						console.log('Ошибка: ' + err);
+						createMap({
+							center: [55.751574, 37.573856],
+							zoom: 12,
+						});
 					});
+
+					function createMap(state) {
+						myMap = new ymaps.Map('map', state);
+					}
+				});
+
+				colorButtonsContainer.style.display = 'flex';
+				let colorButtons = document.querySelectorAll('.colorButton');
+				document.getElementById('map').style.display = 'flex';
+
+				colorButtons.forEach(function (button, i) {
+					buttonSpots[i] = data.spots[i]
+					let spotName = data.spots[i]['Name'];
+					spotName = spotName.substring(0, 14);
+					let spotNameElement = document.createElement('span');
+					spotNameElement.innerText = spotName;
+					button.appendChild(spotNameElement);
+					button.style.backgroundColor = button.getAttribute('data-color');
+					button.querySelector('span').style.backgroundColor = button.getAttribute('data-color');
+
+					if(oldListeners.length == colorButtons.length) button.removeEventListener('click', oldListeners[i]);
+					oldListeners[i] = button.addEventListener('click', function () {
+						selectedColor = this.getAttribute('data-color');
+						let spot = buttonSpots[i];
+						placesToVisit.push(spot);
+						colorButtonsContainer.style.display = 'none';
+						document.getElementById('map').style.display = 'none';
+						let bars = document.querySelector('.prediction-container');
+						if (bars) bars.remove()
+						placesList.style.display = 'flex'
+						const listItem = document.createElement('div');
+						listItem.innerHTML = `
+            <p class='route-text'>${spot.Name} ${spot.Lon} ${spot.Lat}</p>
+        `;
+						var mapElement = document.getElementById('map');
+
+						// Проверяем, существует ли элемент
+						if (mapElement) {
+							// Если элемент существует, удаляем его
+							mapElement.parentNode.removeChild(mapElement);
+						} else {
+							// Если элемент не найден, выводим сообщение об ошибке
+							console.log('Элемент с id "map" не найден.');
+						}
+						placesList.appendChild(listItem);
+
+						routeButton.style.display = 'flex'
+						placesToVisit = []
+					});
+				});
+
+
+			})
+			.catch(error => {
+				console.error('There was an error!', error);
+			});
+	}
+
+
+	function base64ToImage(base64Data) {
+		const img = new Image();
+		img.src = 'data:image/png;base64,' + base64Data;
+		return img;
+	}
+
+	function addPredictedImage(imageData) {
+		const imgElement = base64ToImage(imageData);
+		const predictWrapper = document.querySelector('.predict-wrapper');
+		const existingPrediction = predictWrapper.querySelector('img');
+		imgElement.classList.add('prediction-container')
+		if (existingPrediction) {
+			existingPrediction.remove();
+		}
+		predictWrapper.appendChild(imgElement);
+	}
+
+
+	function buildRouteFromCurrentLocation() {
+		fetchDataForm.style.display = 'none';
+		getSpots.style.display = 'none';
+
+		ymaps.geolocation.get({
+			provider: 'auto',
+			autoReverseGeocode: true
+		}).then(function (result) {
+			// Получение координат текущего местоположения
+			var userCoords = result.geoObjects.get(0).geometry.getCoordinates();
+			console.log('Координаты текущего местоположения:', userCoords);
+
+			// Создание копии списка placesToVisit
+			var placesCopy = JSON.parse(JSON.stringify(placesToVisit));
+			// Массив для хранения новых мест
+			var newPlaces = [];
+
+			// Добавляем текущее местоположение пользователя в список newPlaces
+			newPlaces.push({
+				'Lat': userCoords[0],
+				'Lon': userCoords[1],
+				'Name': 'Моё местоположение'
+			});
+
+			// Построение маршрутов от текущего местоположения пользователя
+			// до каждой точки из списка placesToVisit
+			buildRoute(newPlaces[0], placesCopy, newPlaces);
+			placesList.innerHTML = '<h4 class="route-header">Ваш новый оптимизированный машрут</h4>'
+			newPlaces.forEach(spot => {
+				placesList.innerHTML += `<p class='rout-text'>${spot.Name} ${spot.Lon} ${spot.Lat}</p>`
+			});
+			placesList.innerHTML += `<h4>Откройте его в яндекс карты и наслаждайтесь
+			(Если хотите построить новый маршрут, обновите страницу)</h4>`
+			drawRoute(newPlaces);
+		}).catch(function (error) {
+			console.error('Ошибка при получении местоположения:', error);
+		});
+	}
+
+	// Функция для построения маршрутов от одной точки до всех остальных
+	function buildRoute(startPlace, placesToVisit, newPlaces) {
+		if (placesToVisit.length === 0) {
+			console.log('Маршрут построен');
+			return;
+		}
+
+		var closestPlace = findClosestPlace(startPlace, placesToVisit);
+		console.log('Ближайшее место:', closestPlace);
+
+		placesToVisit = placesToVisit.filter(function (place) {
+			return place !== closestPlace;
+		});
+		console.log(`new free placelist ${JSON.stringify(placesToVisit)}`);
+		newPlaces.push(closestPlace);
+		console.log(`new route placelist ${JSON.stringify(newPlaces)}`);
+		buildRoute(closestPlace, placesToVisit, newPlaces);
+	}
+
+	// Функция для нахождения ближайшего места к данным координатам
+	function findClosestPlace(startPlace, placesToVisit) {
+		var closestDistance = Infinity;
+		var closestPlace = null;
+
+		placesToVisit.forEach(function (place) {
+			var distance = calculateDistance([startPlace.Lon, startPlace.Lat], [place.Lon, place.Lat]);
+
+			console.log(`distance: ${distance}  ${closestDistance}`);
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestPlace = place;
+			}
+		});
+
+		return closestPlace;
+	}
+
+	// Функция для вычисления расстояния между двумя точками на карте (гипотенуза)
+	function calculateDistance(coords1, coords2) {
+		console.log(`start coords: ${coords1}
+		end coords: ${coords2}
+		`);
+		var dx = coords2[0] - coords1[0];
+		var dy = coords2[1] - coords1[1];
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+
+	function drawRoute(places) {
+		let map2 = document.querySelector('#map2');
+		map2.style.display = 'flex';
+		ymaps.ready(function () {
+			var myMap = new ymaps.Map('map2', {
+				center: [places[0].Lat, places[0].Lon],
+				zoom: 12,
+				controls: ['routeEditor'] // Добавляем элемент управления для редактирования маршрута
+			});
+
+			let coords = places.map(function (place) {
+				return [place.Lat, place.Lon];
+			});
+			console.log(`dots for route are: ${coords}`);
+
+			// Определяем параметры маршрута
+			var multiRoute = new ymaps.multiRouter.MultiRoute({
+				referencePoints: coords,
+				params: {
+					routingMode: 'pedestrian' // Указываем режим пешехода
+				}
+			}, {
+				// Автоматически устанавливать границы карты так,
+				// чтобы маршрут был виден целиком.
+				boundsAutoApply: true
+			});
+
+			// Добавление маршрута на карту.
+			myMap.geoObjects.add(multiRoute);
+
+			// Создаем элемент управления для выбора типа транспорта
+			var routeTypeControl = new ymaps.control.ListBox({
+				data: {
+					content: 'Тип маршрута'
+				},
+				items: [
+					new ymaps.control.ListBoxItem({ content: 'Пешеходный', select: true }),
+					new ymaps.control.ListBoxItem({ content: 'Автомобильный' }),
+					new ymaps.control.ListBoxItem({ content: 'Общественный транспорт' })
+				],
+				options: {
+					itemSelectOnClick: false
 				}
 			});
 
+			// Добавляем элемент управления на карту
+			myMap.controls.add(routeTypeControl);
 
-			// restart the form if has a state of error/success
-			Array.prototype.forEach.call( restart, function( entry )
-			{
-				entry.addEventListener( 'click', function( e )
-				{
-					e.preventDefault();
-					form.classList.remove( 'is-error', 'is-success' );
-					input.click();
-				});
+			// Обработчик события выбора типа маршрута
+			routeTypeControl.events.add('click', function (e) {
+				var target = e.get('target');
+				if (target && target.data.get('content')) {
+					var routeType = target.data.get('content');
+					if (routeType === 'Пешеходный') {
+						multiRoute.model.setParams({ routingMode: 'pedestrian' });
+					} else if (routeType === 'Автомобильный') {
+						multiRoute.model.setParams({ routingMode: 'masstransit' });
+					} else if (routeType === 'Общественный транспорт') {
+						multiRoute.model.setParams({ routingMode: 'auto' });
+					}
+				}
 			});
-
-			// Firefox focus bug fix for file input
-			input.addEventListener( 'focus', function(){ input.classList.add( 'has-focus' ); });
-			input.addEventListener( 'blur', function(){ input.classList.remove( 'has-focus' ); });
-
 		});
-	}( document, window, 0 ));
+	}
+
+})
