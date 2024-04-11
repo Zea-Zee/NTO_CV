@@ -142,6 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						mapDiv.id = 'map';
 						mapDiv.style.width = '600px';
 						mapDiv.style.height = '400px';
+						mapDiv.style.display = 'block';
 						predictWrapper.appendChild(mapDiv);
 					}
 					ymaps.geolocation.get({
@@ -307,6 +308,12 @@ document.addEventListener("DOMContentLoaded", function () {
 			// Построение маршрутов от текущего местоположения пользователя
 			// до каждой точки из списка placesToVisit
 			buildRoute(newPlaces[0], placesCopy, newPlaces);
+			placesList.innerHTML = '<h4>Ваш новый оптимизированный машрут</h4>'
+			newPlaces.forEach(spot => {
+				placesList.innerHTML += `<p>${spot.Name} ${spot.Lon} ${spot.Lat}</p>`
+			});
+			placesList.innerHTML += `<h4>Откройте его в яндекс карты и наслаждайтесь
+			(Если хотите построить новый маршрут, обновите страницу)</h4>`
 			drawRoute(newPlaces);
 		}).catch(function (error) {
 			console.error('Ошибка при получении местоположения:', error);
@@ -362,21 +369,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 	function drawRoute(places) {
-		let map2 = document.querySelector('#map2')
-		map2.style.display = 'block'
+		let map2 = document.querySelector('#map2');
+		map2.style.display = 'block';
 		ymaps.ready(function () {
 			var myMap = new ymaps.Map('map2', {
 				center: [places[0].Lat, places[0].Lon],
 				zoom: 9,
-				controls: []
+				controls: ['routeEditor'] // Добавляем элемент управления для редактирования маршрута
 			});
 
 			let coords = places.map(function (place) {
 				return [place.Lat, place.Lon];
-			})
+			});
 			console.log(`dots for route are: ${coords}`);
+
+			// Определяем параметры маршрута
 			var multiRoute = new ymaps.multiRouter.MultiRoute({
-				referencePoints: coords
+				referencePoints: coords,
+				params: {
+					routingMode: 'pedestrian' // Указываем режим пешехода
+				}
 			}, {
 				// Автоматически устанавливать границы карты так,
 				// чтобы маршрут был виден целиком.
@@ -385,6 +397,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 			// Добавление маршрута на карту.
 			myMap.geoObjects.add(multiRoute);
-		})
+
+			// Создаем элемент управления для выбора типа транспорта
+			var routeTypeControl = new ymaps.control.ListBox({
+				data: {
+					content: 'Тип маршрута'
+				},
+				items: [
+					new ymaps.control.ListBoxItem({ content: 'Пешеходный', select: true }),
+					new ymaps.control.ListBoxItem({ content: 'Автомобильный' }),
+					new ymaps.control.ListBoxItem({ content: 'Общественный транспорт' })
+				],
+				options: {
+					itemSelectOnClick: false
+				}
+			});
+
+			// Добавляем элемент управления на карту
+			myMap.controls.add(routeTypeControl);
+
+			// Обработчик события выбора типа маршрута
+			routeTypeControl.events.add('click', function (e) {
+				var target = e.get('target');
+				if (target && target.data.get('content')) {
+					var routeType = target.data.get('content');
+					if (routeType === 'Пешеходный') {
+						multiRoute.model.setParams({ routingMode: 'pedestrian' });
+					} else if (routeType === 'Автомобильный') {
+						multiRoute.model.setParams({ routingMode: 'masstransit' });
+					} else if (routeType === 'Общественный транспорт') {
+						multiRoute.model.setParams({ routingMode: 'auto' });
+					}
+				}
+			});
+		});
 	}
+
 })
