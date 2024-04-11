@@ -8,7 +8,7 @@
   <link rel='stylesheet' href="{% static 'front/css/upload_page.css' %}">
   <script src="https://api-maps.yandex.ru/2.1/?apikey=cca8aae9-b269-402b-b2a3-a9d9f65059ef&lang=ru_RU"></script>
   <script src="https://yandex.st/jquery/2.2.3/jquery.min.js" type="text/javascript"></script>
-    type="text/javascript"></script>
+  type="text/javascript"></script>
   <title>Загрузить изображение</title>
 </head>
 
@@ -59,19 +59,30 @@
     <button id="getSpots" type="button" class='submitBtn'>Показать результаты</button>
 
 
-    <form id="fetchDataForm">
+    <!-- <form id="fetchDataForm">
       {% csrf_token %}
       <label for="urlInput">Введите адрес:</label><br>
       <input type="text" id="urlInput" name="urlInput"><br>
       <button type="submit" id="fetchDataButton">Получить данные</button>
-    </form>
+    </form> -->
 
     <div class="predict-wrapper">
       <div id="map" style="width: 600px; height: 400px"></div>
     </div>
+    <div id="colorButtons">
+      <button class="colorButton" data-color="violet"></button>
+      <button class="colorButton" data-color="blue"></button>
+      <button class="colorButton" data-color="green"></button>
+      <button class="colorButton" data-color="yellow"></button>
+      <button class="colorButton" data-color="orange"></button>
+    </div>
+    <div id="placesList">
+      <h4>Ваш маршрут</h4>
+  </div>  
   </div>
 </body>
 <script type="text/javascript">const staticUrl = "{{ STATIC_URL }}";</script>
 <script src="{% static 'front/js/image_loader.js' %}"></script>
 <script src="{% static 'front/js/attract_shower.js' %}"></script>
+
 </html>

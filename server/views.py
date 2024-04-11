@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import io
 import base64
 import os
+import time
 
 
 matplotlib.use('Agg')
@@ -132,8 +133,6 @@ def fetch_OTP(request):
         soup = BeautifulSoup(html, 'html.parser')
         description = soup.find('meta', attrs={'name': 'description'})['content']
         image_url = soup.find('meta', property='og:image')['content']
-
-        # Возвращаем JsonResponse с вашими данными
         return JsonResponse({'description': description, 'image_url': image_url})
 
     except Exception as e:
@@ -144,7 +143,7 @@ def fetch_OTP(request):
 #ЗАГЛУШКА
 def predict_photo(photo, city=None):
     result = [
-        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "city": None,  "OSM": "way/38411380", "WikiData": "Q37996725", "Rate": None, "Lon": 60.600349, "Lat": 56.845398, "prob": 0.5},
+        {"XID": "N6629818520", "Name": "Нижегородский кремль", "kind": "fortifications", "city": None,  "OSM": "node/6629818520", "WikiData": "Q1550905", "Rate": None, "Lon": 44.002522, "Lat": 56.328667, "prob": 0.5},
         {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "city": None, "OSM": "node/2885181131", "WikiData": "Q55209768", "Rate": None, "Lon": 60.601315, "Lat": 56.834167, "prob": 0.3},
         {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "city": None, "OSM": "way/38581890", "WikiData": "Q55209768", "Rate": None, "Lon": 60.602409, "Lat": 56.835133, "prob": 0.15},
         {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "city": None, "OSM": "node/1930476141", "WikiData": "Q55154121", "Rate": None, "Lon": 60.60743, "Lat": 56.833691, "prob": 0.04},
@@ -156,7 +155,7 @@ def predict_photo(photo, city=None):
 #ЗАГЛУШКА
 def predict_text(text, city=None):
     result = [
-        {"XID": "W38411380", "Name": "Динамо", "kind": "sport", "city": None,  "OSM": "way/38411380", "WikiData": "Q37996725", "Rate": None, "Lon": 60.600349, "Lat": 56.845398, "prob": 0.5},
+        {"XID": "N6629818520", "Name": "Нижегородский кремль", "kind": "fortifications", "city": None,  "OSM": "node/6629818520", "WikiData": "Q1550905", "Rate": None, "Lon": 44.002522, "Lat": 56.328667, "prob": 0.5},
         {"XID": "N2885181131", "Name": "№32 Дом обороны", "kind": "architecture", "city": None, "OSM": "node/2885181131", "WikiData": "Q55209768", "Rate": None, "Lon": 60.601315, "Lat": 56.834167, "prob": 0.3},
         {"XID": "W38581890", "Name": "Дом обороны", "kind": "architecture", "city": None, "OSM": "way/38581890", "WikiData": "Q55209768", "Rate": None, "Lon": 60.602409, "Lat": 56.835133, "prob": 0.15},
         {"XID": "N1930476141", "Name": "№28 Здание городской электростанции «Луч»", "kind": "architecture", "city": None, "OSM": "node/1930476141", "WikiData": "Q55154121", "Rate": None, "Lon": 60.60743, "Lat": 56.833691, "prob": 0.04},
@@ -165,14 +164,34 @@ def predict_text(text, city=None):
     return result
 
 
-from django.http import JsonResponse
+def fetch_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        html = response.text
 
+        soup = BeautifulSoup(html, 'html.parser')
+        description = soup.find('meta', attrs={'name': 'description'})['content']
+        # img_url = soup.find('meta', property='og:image')['content']
+        # img_response = requests.get(img_url)
+        # img_base64 = base64.b64encode(img_response.content).decode('utf-8')
+        return description
+    except Exception as e:
+        print('Error fetching content:', e)
+        return None, None
 
 def predict_image_frontend_bridge(data, city, isphoto):
     if isphoto:
         res = predict_photo(data, city)
     else:
         res = predict_text(data, city)
+
+    for item in res:
+        modal_url = 'https://opentripmap.com/ru/card/' + item['XID']
+        p_content = fetch_content(modal_url)
+        item['text_from_div'] = p_content
+        # item['image_base64'] = img_base64
+
     return [{key: value for key, value in item.items() if key not in ['Rate', 'city']} for item in res]
 
 
@@ -191,8 +210,8 @@ def predict_image_api_bridge(request):
             else:
                 return JsonResponse({'error': 'Некорректный запрос'}, status=400)
         
-        print("Поля в запросе:")
-        print(request.POST.keys())
+        # print("Поля в запросе:")
+        # print(request.POST.keys())
         result =  [{key: value for key, value in item.items() if key not in ['OSM', 'WikiData', 'Rate']} for item in result]
         return JsonResponse(result, safe=False)
     else:
@@ -213,8 +232,8 @@ def predict_text_api_bridge(request):
             else:
                 return JsonResponse({'error': 'Некорректный запрос'}, status=400)
         
-        print("Поля в запросе:")
-        print(request.POST.keys())
+        # print("Поля в запросе:")
+        # print(request.POST.keys())
         result = sorted(result, key=lambda d: d['prob'], reverse=True)
         result = [{key: value for key, value in item.items() if key not in ['OSM', 'WikiData', 'Rate', "prob"]} for item in result]
         return JsonResponse(result, safe=False)
@@ -234,6 +253,7 @@ def predict_front(request):
             return JsonResponse({'error': 'Некорректный запрос'}, status=400)
         result = {}
         result['spots'] = spots
+        # print(spots)
         result['image'] = build_plot(spots)
         return JsonResponse(result, safe=False)
     else:

@@ -4,25 +4,8 @@ let Ekat = 'Город на Урале, сочетающий историю и �
 let Vladimir = 'Жемчужина Золотого кольца, основана Владимиром Мономахом в 1108 году. Привлекает красивой архитектурой и историческими памятниками.';
 let selectedCity = 'Нижний Новгород';
 let myMap;
-
-
-function initMap() {
-    ymaps.geolocation.get({
-        provider: 'yandex'
-    }).then(function (result) {
-        myMap = new ymaps.Map("map", {
-            center: result.geoObjects.get(0).geometry.getCoordinates(),
-            zoom: 7
-        });
-        myMap.geoObjects.add(result.geoObjects);
-    }).catch(function (err) {
-        console.log('Ошибка: ' + err);
-        createMap({
-            center: [55.751574, 37.573856],
-            zoom: 2
-        });
-    });
-}
+let selectedColor;
+let placesToVisit = [];
 
 
 function getCookie(name) {
@@ -41,6 +24,8 @@ function getCookie(name) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+	let colorButtonsContainer = document.getElementById('colorButtons');
+	let placesList = document.querySelector('#placesList')
 	let cityBlock = document.querySelector('.city-block');
 	cityBlock.style.backgroundImage = "url('../../static/front/images/Nizhniy Novgorod.jpg')";
 
@@ -50,12 +35,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	let descriptionForm = document.querySelector('#descriptionForm')
 
 	let getSpots = document.getElementById('getSpots');
+
 	let imageInput = document.getElementById('image');
 	let descriptionInput = document.getElementById('text');
-
-
-	ymaps.ready(initMap);
-
 
 	function checkInputs() {
 		if (imageInput.files.length > 0) {
@@ -143,9 +125,113 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (data.image) {
 					addPredictedImage(data.image);
 				} else {
-					console.log(data);
+					console.log(`No data available ${data}`);
 				}
-				addMarkers(data.spots);
+
+
+				ymaps.ready(function () {
+					console.log('creating map');
+					var myMap;
+					ymaps.geolocation.get({
+						provider: 'yandex'
+					}).then(function (result) {
+						myMap = new ymaps.Map("map", {
+							center: result.geoObjects.get(0).geometry.getCoordinates(),
+							zoom: 7
+						});
+						myMap.geoObjects.add(result.geoObjects);
+
+						let magentaSpot = new ymaps.Placemark([data.spots[0].Lat, data.spots[0].Lon], {
+							iconContent: data.spots[0].prob,
+							balloonContent: data.spots[0].text_from_div
+						}, {
+							preset: 'islands#violetStretchyIcon'
+						});
+						magentaSpot.events.add('click', function (e) {
+							console.log(data.spots[0]);
+							createAndCenterContainer(data.spots[0]['modal-dialog'])
+						});
+						myMap.geoObjects.add(magentaSpot)
+
+
+						let blueSpot = new ymaps.Placemark([data.spots[1].Lat, data.spots[1].Lon], {
+							// iconContent: data.spots[1].prob
+							iconContent: data.spots[1].prob
+							,
+							balloonContent: data.spots[1].text_from_div
+						}, {
+							preset: 'islands#blueStretchyIcon'
+						});
+						myMap.geoObjects.add(blueSpot)
+
+						let greenSpot = new ymaps.Placemark([data.spots[2].Lat, data.spots[2].Lon], {
+							iconContent: data.spots[2].prob,
+							balloonContent: data.spots[2].text_from_div
+						}, {
+							preset: 'islands#greenStretchyIcon'
+						});
+						myMap.geoObjects.add(greenSpot)
+
+						let yellowSpot = new ymaps.Placemark([data.spots[3].Lat, data.spots[3].Lon], {
+							iconContent: data.spots[3].prob,
+							balloonContent: data.spots[3].text_from_div
+						}, {
+							preset: 'islands#yellowStretchyIcon'
+						});
+						myMap.geoObjects.add(yellowSpot)
+
+						let orangeSpot = new ymaps.Placemark([data.spots[4].Lat, data.spots[4].Lon], {
+							iconContent: data.spots[4].prob,
+							balloonContent: data.spots[4].text_from_div
+						}, {
+							preset: 'islands#orangeStretchyIcon'
+						});
+						myMap.geoObjects.add(orangeSpot)
+
+					}).catch(function (err) {
+						console.log('Ошибка: ' + err);
+						createMap({
+							center: [55.751574, 37.573856],
+							zoom: 2
+						});
+					});
+
+					function createMap(state) {
+						myMap = new ymaps.Map('map', state);
+					}
+				});
+
+				colorButtonsContainer.style.display = 'block';
+				let colorButtons = document.querySelectorAll('.colorButton');
+				document.getElementById('map').style.display = 'block';
+
+				colorButtons.forEach(function (button, i) {
+
+					let spotName = data.spots[i]['Name'];
+					spotName = spotName.substring(0, 10);
+					let spotNameElement = document.createElement('span');
+					spotNameElement.innerText = spotName;
+					button.appendChild(spotNameElement);
+					button.style.backgroundColor = button.getAttribute('data-color');
+
+					button.addEventListener('click', function () {
+						selectedColor = this.getAttribute('data-color');
+						let spot = data.spots[i];
+						placesToVisit.push(spot);
+						colorButtonsContainer.style.display = 'none';
+						document.getElementById('map').style.display = 'none';
+						let bars = document.querySelector('.prediction-container');
+						if (bars) bars.remove()
+						placesList.style.display = 'flex'
+						const listItem = document.createElement('div');
+						listItem.innerHTML = `
+            <p>${spot.Name.substring(0, 10)} ${spot.Lon} ${spot.Lat}</p>
+        `;
+						placesList.appendChild(listItem);
+					});
+				});
+
+
 			})
 			.catch(error => {
 				console.error('There was an error!', error);
@@ -169,16 +255,33 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 		predictWrapper.appendChild(imgElement);
 	}
-	function addMarkers(spots) {
-		// Добавление меток на карту
-		for (let i = 0; i < spots.length; i++) {
-			let spot = spots[i];
-			let marker = new ymaps.Placemark([spot.Lat, spot.Lon], {
-				balloonContent: spot.prob
-			}, {
-				preset: 'islands#violetIcon'
-			});
-			myMap.geoObjects.add(marker);
-		}
+
+
+	function createAndCenterContainer(containerText) {
+		// Создаем временный div элемент
+		var tempDiv = document.createElement('div');
+
+		// Задаем текст контейнера для временного div
+		tempDiv.innerHTML = containerText;
+
+		// Получаем размеры окна браузера
+		var windowWidth = window.innerWidth;
+		var windowHeight = window.innerHeight;
+
+		// Получаем размеры контейнера
+		var containerWidth = tempDiv.offsetWidth;
+		var containerHeight = tempDiv.offsetHeight;
+
+		// Рассчитываем координаты для размещения контейнера по центру
+		var leftPosition = (windowWidth - containerWidth) / 2;
+		var topPosition = (windowHeight - containerHeight) / 2;
+
+		// Устанавливаем позицию абсолютно по центру
+		tempDiv.style.position = 'absolute';
+		tempDiv.style.left = leftPosition + 'px';
+		tempDiv.style.top = topPosition + 'px';
+
+		// Добавляем временный div в самый верхний уровень DOM (поверх всего)
+		document.body.appendChild(tempDiv);
 	}
 });

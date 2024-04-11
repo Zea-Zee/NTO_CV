@@ -230,3 +230,12 @@ img {
     width: 40vw;
     height: auto
 }
+
+#colorButtons{
+    display: none;
+}
+
+#placesList{
+    display: none;
+    flex-direction: column;
+}
