@@ -6,6 +6,7 @@ let selectedCity = 'Нижний Новгород';
 let myMap;
 let selectedColor;
 let placesToVisit = [];
+let blockShowButton = false;
 
 
 function getCookie(name) {
@@ -89,6 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	getSpots.addEventListener('click', function (event) {
+		if(blockShowButton) return;
+		blockShowButton = true;
 		event.preventDefault();
 		let formData = new FormData();
 		let imageInput = document.getElementById('image');
@@ -142,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						mapDiv.id = 'map';
 						mapDiv.style.width = '600px';
 						mapDiv.style.height = '400px';
-						mapDiv.style.display = 'block';
+						mapDiv.style.display = 'flex';
 						predictWrapper.appendChild(mapDiv);
 					}
 					ymaps.geolocation.get({
@@ -150,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					}).then(function (result) {
 						myMap = new ymaps.Map("map", {
 							center: result.geoObjects.get(0).geometry.getCoordinates(),
-							zoom: 7
+							zoom: 12,
 						});
 						myMap.geoObjects.add(result.geoObjects);
 
@@ -199,12 +202,13 @@ document.addEventListener("DOMContentLoaded", function () {
 							preset: 'islands#orangeStretchyIcon'
 						});
 						myMap.geoObjects.add(orangeSpot)
+						blockShowButton = false
 
 					}).catch(function (err) {
 						console.log('Ошибка: ' + err);
 						createMap({
 							center: [55.751574, 37.573856],
-							zoom: 2
+							zoom: 12,
 						});
 					});
 
@@ -213,18 +217,19 @@ document.addEventListener("DOMContentLoaded", function () {
 					}
 				});
 
-				colorButtonsContainer.style.display = 'block';
+				colorButtonsContainer.style.display = 'flex';
 				let colorButtons = document.querySelectorAll('.colorButton');
-				document.getElementById('map').style.display = 'block';
+				document.getElementById('map').style.display = 'flex';
 
 				colorButtons.forEach(function (button, i) {
 
 					let spotName = data.spots[i]['Name'];
-					spotName = spotName.substring(0, 10);
+					spotName = spotName.substring(0, 14);
 					let spotNameElement = document.createElement('span');
 					spotNameElement.innerText = spotName;
 					button.appendChild(spotNameElement);
 					button.style.backgroundColor = button.getAttribute('data-color');
+					button.querySelector('span').style.backgroundColor = button.getAttribute('data-color');
 
 					button.addEventListener('click', function () {
 						selectedColor = this.getAttribute('data-color');
@@ -251,7 +256,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						}
 						placesList.appendChild(listItem);
 
-						routeButton.style.display = 'block'
+						routeButton.style.display = 'flex'
 					});
 				});
 
@@ -370,11 +375,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function drawRoute(places) {
 		let map2 = document.querySelector('#map2');
-		map2.style.display = 'block';
+		map2.style.display = 'flex';
 		ymaps.ready(function () {
 			var myMap = new ymaps.Map('map2', {
 				center: [places[0].Lat, places[0].Lon],
-				zoom: 9,
+				zoom: 12,
 				controls: ['routeEditor'] // Добавляем элемент управления для редактирования маршрута
 			});
 

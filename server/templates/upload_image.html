@@ -9,9 +9,10 @@
   <script src="https://api-maps.yandex.ru/2.1/?apikey=cca8aae9-b269-402b-b2a3-a9d9f65059ef&lang=ru_RU"></script>
   <script src="https://yandex.st/jquery/2.2.3/jquery.min.js" type="text/javascript"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" type="image/x-icon" href="{% static 'front/images/favicon.ico' %}">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <title>Загрузить изображение</title>
+  <title>Постройте свой туристический маршрут</title>
 </head>
 
 <body>
@@ -43,13 +44,13 @@
       <div class="row-container">
         <form id="imageForm" enctype="multipart/form-data">
           {% csrf_token %}
-          <label for="image">фото</label>
+          <label class='image-label' for="image">фото</label>
           <input type="file" id="image" name="image" accept="image/*">
         </form>
       </div>
-      <div class="row-container mid-row-container">
+      <!-- <div class="row-container mid-row-container">
         <p>или</p>
-      </div>
+      </div> -->
       <div class="text-input row-container">
         <form id="descriptionForm">
           {% csrf_token %}
@@ -72,19 +73,20 @@
       <div id="map" style="width: 600px; height: 400px"></div>
     </div>
     <div id="colorButtons">
-      <button class="colorButton" data-color="violet"></button>
-      <button class="colorButton" data-color="blue"></button>
-      <button class="colorButton" data-color="green"></button>
-      <button class="colorButton" data-color="yellow"></button>
-      <button class="colorButton" data-color="orange"></button>
+      <button class="colorButton" data-color="#d199ff"></button>
+      <button class="colorButton" data-color="#99e6ff"></button>
+      <button class="colorButton" data-color="#80ff80"></button>
+      <button class="colorButton" data-color="#ff9"></button>
+      <button class="colorButton" data-color="#ffc966"></button>
     </div>
     <div id="placesList">
       <h4>Ваш маршрут</h4>
     </div>
-    <button id="routeButton">Построить маршрут от моего местоположения</button>
+    <button id="routeButton" class="submitBtn">Построить маршрут от моего местоположения</button>
     <div id="map2" style="width: 600px; height: 400px"></div>
   </div>
 </body>
+<footer></footer>
 <script type="text/javascript">const staticUrl = "{{ STATIC_URL }}";</script>
 <script src="{% static 'front/js/image_loader.js' %}"></script>
 

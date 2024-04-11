@@ -86,22 +86,27 @@ h1 {
 }
 
 .row-container{
-    width: 30%;
-    max-width: 30%;
+    font-size: 24px;
+    width: 20%;
+    max-width: 20%;
     margin: auto;
     text-align: center;
 }
 
+.image-label{
+    margin-right: 1vw;
+}
+
 .mid-row-container {
     display: inline-block;
-    width: 10%;
-    box-sizing: border-box; /* Учитываем внутренние отступы в размере элемента */
+    margin: auto 0;
+    padding: 0;
 }
 
 .row-container > p {
     display: inline-block;
     padding: 0;
-    margin: 0; /* Убираем внешние отступы */
+    margin: 0;
 }
 
 .content {
@@ -130,20 +135,6 @@ h1 {
 
 .submitBtn:hover {
     background-color: #ccc;
-}
-
-@media (max-aspect-ratio: 1/1) {
-    /* Стили для мобильных устройств */
-    .container {
-        flex-direction: column;
-        justify-content: flex-start;
-    }
-
-    .content {
-        max-width: none;
-        width: 100%;
-        padding: 0 20px;
-    }
 }
 
 .city-select-container{
@@ -248,7 +239,25 @@ img {
 }
 
 #colorButtons{
+    width: 100%;
+    margin-top: 10vh;
     display: none;
+    font-size: 24px;
+    display: flex;
+    flex-direction: row;
+}
+
+.colorButton{
+    margin: auto;
+    /* max-width: 19vw; */
+}
+
+.colorButton > span{
+    padding: 1vh 5vw;
+}
+
+.colorButton:hover{
+    scale: 1.1;
 }
 
 #placesList{
@@ -258,4 +267,33 @@ img {
 
 #routeButton{
     display: none;
+}
+
+
+footer{
+    margin-top: 20vh;
+    height: 20vh;
+    background-color: black;
+    margin-bottom: 0;
+}
+
+
+
+
+@media (max-aspect-ratio: 1/1) {
+    /* Стили для мобильных устройств */
+    .container {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .content {
+        max-width: none;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    .predict-wrapper{
+        flex-direction: column;
+    }
 }
